@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TOVIS - Beauty Trends App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #000;
+            color: #fff;
+        }
+        .app-container {
+            max-width: 100%;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: flex-start;
+            padding: 10px 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 100%);
+            z-index: 10;
+            overflow-x: auto;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .top-bar::-webkit-scrollbar {
+            display: none;
+        }
+        .category {
+            display: inline-block;
+            padding: 5px 15px;
+            margin: 0 5px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #fff;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+            cursor: pointer;
+        }
+        .category.active {
+            opacity: 1;
+            border-bottom: 2px solid #fff;
+        }
+        .video-feed {
+            height: calc(100% - 60px);
+            margin-top: 50px;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .video-feed::-webkit-scrollbar {
+            display: none;
+        }
+        .video-container {
+            height: 100%;
+            scroll-snap-align: start;
+            position: relative;
+            background-color: #000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .video-container .tiktok-embed {
+            width: 100% !important;
+            height: 100% !important;
+            margin: 0 !important;
+            max-width: none !important;
+            min-width: 0 !important;
+        }
+        .video-info {
+            position: absolute;
+            bottom: 80px;
+            left: 20px;
+            z-index: 2;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            pointer-events: none;
+        }
+        .action-buttons {
+            position: absolute;
+            right: 20px;
+            bottom: 80px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            z-index: 2;
+        }
+        .action-button {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 5px 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            z-index: 10;
+            height: 60px;
+        }
+        .nav-item {
+            color: #fff;
+            text-decoration: none;
+            font-size: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <div class="top-bar">
+            <div class="category active" onclick="showCategory('the-looks')">The Looks</div>
+            <div class="category" onclick="showCategory('nails')">Nails</div>
+            <div class="category" onclick="showCategory('barbering')">Barbering</div>
+            <div class="category" onclick="showCategory('hair')">Hair</div>
+            <div class="category" onclick="showCategory('makeup')">Makeup</div>
+            <div class="category" onclick="showCategory('lashes')">Lashes</div>
+        </div>
+        <div id="video-feed" class="video-feed">
+            <!-- Videos will be dynamically inserted here -->
+        </div>
+        <div class="bottom-nav">
+            <a href="#" class="nav-item">
+                <div class="nav-icon">🏠</div>
+                Home
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">🔍</div>
+                Search
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">👤</div>
+                Profile
+            </a>
+            <a href="#" class="nav-item">
+                <div class="nav-icon">🔔</div>
+                Notifications
+            </a>
+        </div>
+    </div>
+
+    <script>
+        const videos = {
+            nails: [
+                {
+                    embed: `<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@nailsbypaular/video/7416710537347681569" data-video-id="7416710537347681569"> <section> <a target="_blank" title="@nailsbypaular" href="https://www.tiktok.com/@nailsbypaular?refer=embed">@nailsbypaular</a> minimal fall nails! 🤎🧸🍁🫶🏻 </section> </blockquote>`,
+                    title: "Minimal Fall Nails by @nailsbypaular",
+                    description: "Learn this minimal nail art technique",
+                    hashtags: "#nailart #fallnails"
+                },
+                {
+                    embed: `<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@heluviee/video/7421983931374832926" data-video-id="7421983931374832926" style="max-width: 605px;min-width: 325px;" > <section> <a target="_blank" title="@heluviee" href="https://www.tiktok.com/@heluviee?refer=embed">@heluviee</a> chic for spooky szn ✨🥀 sosoo obsessed w how glassy these look ! </section> </blockquote>`,
+                    title: "Chic Spooky Season Nails by @heluviee",
+                    description: "Halloween inspired nail design",
+                    hashtags: "#halloween #naildesign"
+                }
+            ],
+            barbering: [
+                {
+                    embed: `<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@nguyensteadycutting/video/7371863772715142446" data-video-id="7371863772715142446" style="max-width: 605px;min-width: 325px;" > <section> <a target="_blank" title="@nguyensteadycutting" href="https://www.tiktok.com/@nguyensteadycutting?refer=embed">@nguyensteadycutting</a> Blowout taper </section> </blockquote>`,
+                    title: "Blowout Taper",
+                    description: "Barbering",
+                    hashtags: "#nailart #fallnails"
+                },
+                {
+                    embed: `<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@ivanthegreat86/video/7281362729032764718" data-video-id="7281362729032764718" style="max-width: 605px;min-width: 325px;" > <section> <a target="_blank" title="@ivanthegreat86" href="https://www.tiktok.com/@ivanthegreat86?refer=embed">@ivanthegreat86</a> Tapers </section> </blockquote>`,
+                    title: "@ivanthegreat86",
+                    description: "Taper",
+                    hashtags: "#halloween #naildesign"
+                }
+            ],
+ hair: [
+                {
+                    embed: `<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@itsstephramirez/video/7139525675853024558" data-video-id="7139525675853024558" style="max-width: 605px;min-width: 325px;" > <section> <a target="_blank" title="@itsstephramirez" href="https://www.tiktok.com/@itsstephramirez?refer=embed">@itsstephramirez</a> My client always keeps me on my toes when it comes to her hair. </section> </blockquote>`,
+                    title: "Hair Color",
+                    description: "My client always keeps me on my toes when it comes to her hair.",
+                    hashtags: "#nailart #fallnails"
+                },
+                {
+                    embed: `<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@colorsmechas/video/7289548973562465541" data-video-id="7289548973562465541" style="max-width: 605px;min-width: 325px;" > <section> <a target="_blank" title="@colorsmechas" href="https://www.tiktok.com/@colorsmechas?refer=embed">@colorsmechas</a> A mi no me gusta me encanta 😍 </section> </blockquote>`,
+                    title: "@colorsmechas",
+                    description: "A mi no me gusta me encanta 😍",
+                    hashtags: "#halloween #naildesign"
+                }
+            ],
+ makeup: [
+                {
+                    embed: `<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@dhivya.srii/video/7361886918113512710" data-video-id="7361886918113512710" style="max-width: 605px;min-width: 325px;" > <section> <a target="_blank" title="@dhivya.srii" href="https://www.tiktok.com/@dhivya.srii?refer=embed">@dhivya.srii</a> asoka makeup trend✨ </section> </blockquote>`,
+                    title: "@dhivya.srii",
+                    description: "asoka makeup trend✨",
+                    hashtags: "#nailart #fallnails"
+                },
+                {
+                    embed: `<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@jackiefmua/video/7385601756870331690" data-video-id="7385601756870331690" style="max-width: 605px;min-width: 325px;" > <section> <a target="_blank" title="@jackiefmua" href="https://www.tiktok.com/@jackiefmua?refer=embed">@jackiefmua</a> step by step bridal glam on my beautiful bride francesca 👰🏻‍♀️🤍 </section> </blockquote>`,
+                    title: "@jackiefmua",
+                    description: "step by step bridal glam on my beautiful bride",
+                    hashtags: "#halloween #naildesign"
+                }
+            ],
+ lashes: [
+                {
+                    embed: `<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@geeberz/video/7394958726853102890" data-video-id="7394958726853102890" style="max-width: 605px;min-width: 325px;" > <section> <a target="_blank" title="@geeberz" href="https://www.tiktok.com/@geeberz?refer=embed">@geeberz</a> Tried a new lash map, i love!</section> </blockquote>`,
+                    title: "@geeberz",
+                    description: "new lash map",
+                    hashtags: "#nailart #fallnails"
+                },
+                {
+                    embed: `<blockquote class="tiktok-embed" cite="https://www.tiktok.com/@pinkpureecosmetics/video/7289838041978506538" data-video-id="7289838041978506538" style="max-width: 605px;min-width: 325px;" > <section> <a target="_blank" title="@pinkpureecosmetics" href="https://www.tiktok.com/@pinkpureecosmetics?refer=embed">@pinkpureecosmetics</a> THIS is the prettiest wispy lash map hands down 😍 </section> </blockquote>`,
+                    title: "@pinkpureecosmetics",
+                    description: "THIS is the prettiest wispy lash map hands down",
+                    hashtags: "#halloween #naildesign"
+                }
+            ],
+        };
+
+        function createVideoElement(video) {
+            return `
+                <div class="video-container">
+                    ${video.embed}
+                    <div class="video-info">
+                        <h3>${video.title}</h3>
+                        <p>${video.description}</p>
+                        <p>${video.hashtags}</p>
+                    </div>
+                    <div class="action-buttons">
+                        <div class="action-button">❤️</div>
+                        <div class="action-button">💬</div>
+                        <div class="action-button">⏩</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showCategory(category) {
+            const videoFeed = document.getElementById('video-feed');
+            videoFeed.innerHTML = '';
+            
+            if (category === 'the-looks') {
+                const allVideos = Object.values(videos).flat();
+                allVideos.sort(() => Math.random() - 0.5);
+                allVideos.forEach(video => {
+                    videoFeed.innerHTML += createVideoElement(video);
+                });
+            } else {
+                videos[category].forEach(video => {
+                    videoFeed.innerHTML += createVideoElement(video);
+                });
+            }
+
+            // Update active category
+            document.querySelectorAll('.category').forEach(cat => {
+                cat.classList.remove('active');
+            });
+            document.querySelector(`.category[onclick="showCategory('${category}')"]`).classList.add('active');
+
+            // Reload TikTok embed script
+            const script = document.createElement('script');
+            script.src = 'https://www.tiktok.com/embed.js';
+            script.async = true;
+            document.body.appendChild(script);
+        }
+
+        // Initialize with 'The Looks'
+        showCategory('the-looks');
+    </script>
+</body>
+</html>
